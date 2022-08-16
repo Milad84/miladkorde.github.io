@@ -48,6 +48,8 @@
   </style>
 
 </head>
+<h3> MEASURING LOCAL CONTEXT: USING MACHINE LEARNING AND K-MEANS CLUSTERING OF CONSUMER SURVEY DATA TO APPROXIMATE LOCAL ATTITUDES</h3>
+
 <body>
 
 <div id="mapid" style="width: 100%; height: 600px;"></div>
@@ -208,4 +210,46 @@ var legend = L.control({position: 'bottomleft'});
 <p>Cluster 1 (blue color) = Weakest support for environmental initiatives</p>
 <p>Cluster 2 (red color) = Strong support for environmental initiatives</p>
 <p>Cluster 3 (green color) = Weaker support for environmental initiatives </p>
+
+
+
+<p>This study will attempt to situate concrete alternative energy projects at selected HEIs in their state and local/community contexts. Whereas the preceding sections of my study proposed data and methods for measuring/describing state context, this section provides details on how the local context will be approximated.
+To assess the geographical context, I will rely on two valuable data sources: (1) the SimmonsLOCAL annual consumer survey and (2) America's Goals Report. The indicator sources were chosen to be as up-to-date as possible and based on data availability for the most significant number of States. The purpose of further analysis of geographical context is to represent the interests to which university decision-makers are accountable and in which they are embedded. The assumption is that university administrators make decisions consistent with state priorities, especially when they are state-owned and funded. Therefore, by looking at the extent of sustainability in public/state HEIs' plans, it is possible to assess whether current priorities reflect state policy.
+Similarly, it is possible to draw on data from local (home) populations to determine how aligned HEI energy priorities are with their neighbors' attitudes towards the environment. In that sense, and drawing on the instructive literature summarized above, an HEI's commitment to sustainable energy is hypothesized to be a function of at least three interacting variables: (1) Financial feasibility (i.e., whether there is a proper coupling), (2) State priorities, and (3) Local priorities. One argument could be that universities are most likely to invest in sustainable energy when all three of the above factors are favorable (i.e., it is profitable; the state is strong on climate action and energy, and residents prioritize sustainability goals). On the other hand, even when projects are financially feasible, we might expect inaction if states and localities are not particularly strong on environmental protection sustainability issues.
+"Mapping features based on how similar they are to surrounding features [clustering] is different [and more significant] than simply mapping the values of features [graduate color map]" (Mitchel, 2005, p.163). By comparing the geographical locations of clusters, it is possible to examine and identify the possible contributing factors to sustainability commitment in HEIs.
+To perform a cluster analysis, two problems have to be solved: (1) efficient partitioning with homogeneous groups and (2) effective interpretation (Huang, 1997). The Multivariate Clustering tool in ArcGIS Pro uses the k-means algorithm by default. If the number of clusters is not defined, they will be determined by Calinski-Harabasz pseudo-F-statistics, a ratio of the variance between and within clusters. While it is possible to use nominal data, the variable used in K-means should be numeric because the algorithm does not yield satisfactory results with binary (categorical) variables (ArcGIS Pro help) unless a two-step approach is used. In addition to a summary statistic for each variable, the R2 will also be calculated (Equation 35).
+The similarity between features is determined by the value assigned to them. In the k-means approach, higher values in multiple features will be associated with higher values in other features through a highly algorithmic process that cannot be summarized in a single formula (Peng, 2012). K-means clustering is a partitioning approach based on multiple rounds of iteration (Peng, 2012, p.111; MacQueen, 1967; Meyers et al., 2016). One requirement is that the number of clusters should be decided, and when the number of clusters is left empty, the algorithm may produce a high number of clusters even with one variable selected. </p>
+
+<p>The process called k-means appears to provide partitions that are "reasonably efficient in the sense of within-class variance" (MacQueen 1967, p.1). The k-means clustering is agglomerative since observations are added to a cluster after completing a phase and is iterative since the next step is based on previous ones (Meyers et al., 2016). The exact appropriate number of clusters cannot be known in advance, even though some statisticians tried to examine strategies to calculate the correct number of clusters before
+starting the iteration (Meyers et al., 2016). The number of clusters will be determined after several attempts and by comparison between the researcher's best results or by using the results of Pseudo F statistics (Peng, 2012; Meyers et al., 2016).
+The k-means also represent a generalization of the ordinary sample mean (MacQueen, 1967). Given a set of numeric X and an integer number of clusters (K), the K-means algorithm tries to find a partition of X into K clusters that minimize the within-group sum of squared errors (WGSS) (Huang, 1998). To achieve that, the variables should be in z-score, the standardization of data should be applied before starting the algorithm (Meyers et al., 2016), and data should be screened for outliers to avoid their selection as the central point in the clustering step (Norusis, 2011; Shih et al., 2010). The outline of the algorithm is defined by Peng (2012), Meyers (2016), ArcGIS help center (2019), MacQueen (1967), Shih et al. (2010), Ralambondrainy (1995), Huang (1998), and Jain (2010) as follows:
+1. Classification: identifies the number of clusters at some integer greater than or equal to 2.
+2. Selection of a sample number of centroids (seeds): this step is also known as the seed point step, where some random points will be drawn as the center of clusters (see appendix 1).
+3. Assigning the points (objects, values) to the centroids of features
+4. Assign the center points of each feature to the belonging cluster: After a point is added, "the mean of the group will be adjusted to take account of the new point" (MacQueen, 1967, p.283).
+5. Recalculation of centroid position and repetition of the iteration: The modified Centroid involves calculating the Euclidean distance between center points. The smallest distance then will determine which cluster the center point belongs to. One key criterion is "the minimum sum of squared Euclidean distances from each entity to the centroid of the cluster to which it belongs" (Aloise et al., 2009, p.245).
+</p>
+
+<p>The 15 variables used in this dissertation come from different data sets available on SimplyAnalytics, and they include people who agree with the following statements: (1) make a conscious effort to recycle, (2) packaging for products should be recycled, (3) environmentally sound/good business. (4) companies should help consumers to become environmentally responsible, (5) personal obligation towards environmental responsibility, (6) others must see me environmentally conscious, (7) would buy less expensive eco-friendly products,
+
+(8) eco-friendly products should be of higher quality products, (9) tell companies to stop sending catalogs, (10) more likely to purchase from the environmentally-friendly company, (11) to choose environmentally-friendly methods of transportation, (12) they have used recycled products, (13) worried about the pollution caused by cars, (14) people have to recycle, and (15) people who belong to environmentalists organizations.
+</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </html>
