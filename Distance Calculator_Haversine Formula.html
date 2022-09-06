@@ -1,7 +1,9 @@
+<!DOCTYPE html>
+
 <html>
 
 <head>
-  <title>Distance Calculator</title>
+  <title>Distance Calculator Using Haversine Formula </title>
   <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
   <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
   <!-- bootstrap for styling , Pyscript can also be used for styling instead of bootstrap -->
@@ -28,12 +30,8 @@
 
   <div class="container">
 
-    <h4 class="text-center">
-        This is an ongoing project to create a series of applications that can calculate the distance between two points.
-        The current page is the prototype for calculation of distance based on cartesian coordinate system.
-    </h4>
         <h1 class="text-center">
-            Calculated Distance
+            Calculated Distance Using Haversine Formula
         </h1>
         <br />
 
@@ -69,31 +67,58 @@
 from js import document, alert
 #imported this to create a proxy function that will not execute when the page is loaded
 from pyodide import create_proxy
+#imported to do maths calculation for curvature
+from math import radians, cos, sin, asin, sqrt
+
 
 
 def button_click(event):
 
-
-	FirstLat = document.getElementById("FirstLat").value
-	FirstLong= document.getElementById('FirstLong').value
-	SecLat= document.getElementById('SecLat').value
-	SecLong= document.getElementById('SecLong').value
-
-
-	<!-- #validate input
-	if(not(FirstLat.isnumeric()) and not(FirstLong.isnumeric()) and not(SecLat.isnumeric()) and not(SecLong.isnumeric())):
-		alert("Invalid Input(s), please make sure you have valid cordinates input")
-		return False -->
+    FirstLat = document.getElementById("FirstLat").value
+    FirstLong= document.getElementById('FirstLong').value
+    SecLat= document.getElementById('SecLat').value
+    SecLong= document.getElementById('SecLong').value
 
 
-	#since the input values will be string, converting to float
-	dx = float(SecLat) - float(FirstLat)
-	dy = float(SecLong) - float(FirstLong)
-	dsquared = dx*dx + dy*dy
-	calculated_distance = dsquared**0.5
+# attempt conversion of input and alert if any of them
+# aren't valid conversions
+
+    try:
+        first_lat = float(FirstLat)
+        first_long = float(FirstLong)
+        sec_lat = float(SecLat)
+        sec_long = float(SecLong)
+    except ValueError:
+        alert("Invalid inputs, please make sure you have valid coordinates input.")
+        return False
 
 
-	document.getElementById("Distance").innerHTML = 'Calculated Distance: ' + str(calculated_distance)
+    dx = sec_lat - first_lat
+    dy = sec_long - first_long
+    dsquared = dx*dx + dy*dy
+    calculated_distance = dsquared**0.5
+
+# to calculate with curvature using Haversine Formula
+    first_lat_rad = radians(first_lat)
+    sec_lat_rad = radians(sec_lat)
+    first_long_rad = radians(first_long)
+    sec_long_rad = radians(sec_long)
+
+# Calculating using the Haversine formula
+    dlon = sec_long_rad - first_long_rad
+    dlat = sec_lat_rad - first_lat_rad
+    a = sin(dlat / 2)**2 + cos(first_lat_rad) * cos(sec_lat_rad) * sin(dlon / 2)**2
+
+    c = 2 * asin(sqrt(a))
+
+# We define the radius of the earth in miles
+    r = 6371
+
+# calculate the result
+    calculated_distance = c * r
+
+ #display the result
+    document.getElementById("Distance").innerHTML = 'Calculated Distance: ' + str(calculated_distance)
 
 
 def setup():
@@ -109,17 +134,7 @@ def setup():
 
 setup()
 
+
   </py-script>
-
-<div >
-
-  <h4 class="text-center">
-      To calculate the distance based on the curvature of the Earth, please click the following link!
-  </h4>
-  <center>
-        <a href="Distance Calculator_Haversine Formula.html" class="nav-link" center>Distance Calculator Based on the Curvature of the Earth</a>
-	</center>
-</div>
-
 </body>
 </html>
