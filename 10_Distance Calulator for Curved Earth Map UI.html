@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 
 <html>
-  
+
 <head>
   <title>Distance Calculator Using Haversine Formula </title>
 
@@ -45,51 +45,51 @@
 #button {display: none;}
 </style>
 </head>
-  
+
 <body>
   <div id="msg">Loading page, please wait ...</div>
-   
+
   <br />
   <br />
-  
-  <div class="container"  id="container"> 
+
+  <div class="container"  id="container">
 
     <h1 class="text-center">
-        Calculated Distance Using Haversine Formula 
+        Calculated Distance Using Haversine Formula
     </h1>
-        
+
         <!-- div for map-->
         <div id="map"></div>
-       
+
         <h3 class="text-center alert alert-info" id="status" >
             Select Origin  In The Map
         </h3>
         <br />
-        
-  
+
+
         <p>
             <input id="FirstLat" type="hidden" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm" placeholder="Enter the Latitude of the first point" /></p>
-    
+
             <p>
             <input id="FirstLong" type="hidden" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm" placeholder="Enter the Longitude of the first point" /></p>
-    
+
             <p>
             <input id="SecLat" type="hidden" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm" placeholder="Enter the Latitude of the second point" /></p>
-    
+
             <p>
             <input id="SecLong" type="hidden" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm" placeholder="Enter the Longitude of the second point" /></p>
-		
-		
+
+
 	<br/>
-	
+
 	 <center>
 		<button  class="btn btn-info" type="button" id="button">Calculate the Distance Between Two Points</button>
 	</center>
-  
+
   <p>
         <h4>Result:</h4>
         <textarea id="Distance" class="form-control" rows="2" aria-label="Large" aria-describedby="inputGroup-sizing-sm" placeholder="Result"></textarea></p>
- 
+
   <br />
   <br />
   </div>
@@ -104,7 +104,7 @@
         var origin = 0;
         //array for polyline marker
         var latlngs = Array()
-        
+
 
         // Add the map
         var map = L.map('map').setView([51.505, -0.09], 13);
@@ -125,7 +125,7 @@
           marker.bindPopup("<b>"+what+"</b><br> <i>Latitude: </i>"+ev.latlng.lat+" <br/> <i>Longitude: </i>"+ev.latlng.lng).openPopup();
         }
 
-        //rest map 
+        //rest map
         function clearMap() {
           latlngs = Array()
           active_polyline.clearLayers();
@@ -134,15 +134,15 @@
         //Event Listener
         map.addEventListener('click', function(ev){
           if (origin == 0){
-           
-            //reset 
+
+            //reset
             clearMap()
 
 
             $('#status').text('Select Destination In The Map')
             $('#FirstLat').val(ev.latlng.lat)
-            $('#FirstLong').val(ev.latlng.lng)  
-            
+            $('#FirstLong').val(ev.latlng.lng)
+
             //push latlong value to array
             latlngs.push([ev.latlng.lat,ev.latlng.lng]);
 
@@ -151,13 +151,13 @@
 
             origin = 1
           }else{
-            
+
             $('#status').text('Select Origin  In The Map')
             $('#SecLat').val(ev.latlng.lat)
-            $('#SecLong').val(ev.latlng.lng) 
-            
+            $('#SecLong').val(ev.latlng.lng)
+
             //push latlong value to array
-            latlngs.push([ev.latlng.lat,ev.latlng.lng]);            
+            latlngs.push([ev.latlng.lat,ev.latlng.lng]);
 
 
             //trigger #button click event so that PyScript event is triggered
@@ -177,14 +177,14 @@
 
             origin = 0
           }
-          
+
         });
 
-       
+
 
 
   </script>
- 
+
   <py-script>
 from js import document, alert
 #imported this to create a proxy function that will not execute when the page is loaded
@@ -240,7 +240,7 @@ def button_click(event):
     calculated_distance = c * r
 
  #display the result
-    document.getElementById("Distance").innerHTML = 'Calculated Distance: ' + str(calculated_distance)   
+    document.getElementById("Distance").innerHTML = 'Calculated Distance: ' + str(calculated_distance)
 
 
 def setup():
@@ -257,7 +257,16 @@ def setup():
 
 setup()
 
- 
+
   </py-script>
+  <div >
+
+    <h4 class="text-center">
+        To calculate the distance based on a network of roads with a UI please click the following link!
+    </h4>
+    <center>
+          <a href="Georouted Distance Calculation.html" class="nav-link" center>Distance Calculator Based on a network of roads called from an API with User Interface</a>
+    </center>
+  </div>
 </body>
 </html>
