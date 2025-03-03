@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Distance Calculator</title>
+
+  <!-- PyScript CSS and JS -->
+  <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+  <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+
+  <!-- Internal CSS -->
+  <style>
+    /* Import a modern font at the very top */
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap');
+
+    /* Hide py-script blocks with output="none" so that the Python code isn’t visible */
+    py-script[output="none"] {
+      display: none;
+    }
+
+    /* Global Reset & Styling */
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
+      font-family: 'Roboto', sans-serif;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    .container {
+      background: #fff;
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      font-size: 2rem;
+      color: #333;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    h3 {
+      font-size: 1.25rem;
+      color: #333;
+      margin-bottom: 10px;
+    }
+    h4 {
+      font-size: 1rem;
+      color: #555;
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+    input.form-control,
+    textarea.form-control {
+      width: 100%;
+      padding: 12px 15px;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      transition: border-color 0.3s ease;
+    }
+    input.form-control:focus,
+    textarea.form-control:focus {
+      border-color: #007bff;
+      outline: none;
+    }
+    button.btn {
+      display: inline-block;
+      padding: 12px 30px;
+      font-size: 1rem;
+      color: #fff;
+      background-color: #007bff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button.btn:hover {
+      background-color: #0056b3;
+    }
+    .text-center {
+      text-align: center;
+    }
+    .nav-link {
+      font-size: 1.1rem;
+      color: #007bff;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+    .nav-link:hover {
+      color: #0056b3;
+      text-decoration: underline;
+    }
+    #msg {
+      text-align: center;
+      font-size: 1.2rem;
+      color: #555;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Loading message (will be removed when PyScript is ready) -->
+  <div id="msg">Loading page, please wait ...</div>
+
+  <div class="container">
+    <h4 class="text-center">
+      I believe that distance calculation is the core of GIS. In the vast realm of GIS, distance is nothing short of a golden thread that weaves through every map, analysis, and decision. The invisible ruler measures not just space but the essence of connectivity, accessibility, and relationships within our world. From helping urban planners design efficient transportation networks to aiding ecologists in understanding wildlife migration patterns, distance in GIS is our compass, guiding us toward informed solutions and deeper insights. So, whether you are exploring the bustling streets of a city or the remote corners of our planet, always remember: in the realm of GIS, distance is not just a number; it is a gateway to discovery, an enabler of change, and the key to unlocking the secrets of our spatial world.
+      <br />
+      This is an educational project to create a series of applications that can calculate the distance between two points. The current page is the prototype for calculation of distance based on a Cartesian coordinate system. Links at the end of every page will take you to a more advanced approach.
+    </h4>
+
+    <h1 class="text-center">Calculated Distance</h1>
+
+    <div>
+      <h3>Enter the Latitude of the first point</h3>
+      <input id="FirstLat" type="text" class="form-control" placeholder="Enter the Latitude of the first point" />
+    </div>
+
+    <div>
+      <h3>Enter the Longitude of the first point</h3>
+      <input id="FirstLong" type="text" class="form-control" placeholder="Enter the Longitude of the first point" />
+    </div>
+
+    <div>
+      <h3>Enter the Latitude of the second point</h3>
+      <input id="SecLat" type="text" class="form-control" placeholder="Enter the Latitude of the second point" />
+    </div>
+
+    <div>
+      <h3>Enter the Longitude of the second point</h3>
+      <input id="SecLong" type="text" class="form-control" placeholder="Enter the Longitude of the second point" />
+    </div>
+
+    <div class="text-center">
+      <button class="btn" type="button" id="button">Calculate the Distance Between Two Points</button>
+    </div>
+
+    <div>
+      <h4>Result:</h4>
+      <textarea id="Distance" class="form-control" rows="2" placeholder="Result"></textarea>
+    </div>
+  </div>
+
+  <div class="container">
+    <h4 class="text-center">
+      To calculate the distance based on the curvature of the Earth, please click the following link!
+    </h4>
+    <div class="text-center">
+      <a href="Distance Calculator_Haversine Formula.html" class="nav-link">Distance Calculator Based on the Curvature of the Earth</a>
+    </div>
+  </div>
+
+  <!-- Python code executed by PyScript; its output is hidden -->
+  <py-script output="none">
+from js import document, alert, console
+from pyodide import create_proxy
+
+def button_click(event):
+    console.log("Button clicked.")
+    try:
+        # Retrieve input values
+        FirstLat = document.getElementById("FirstLat").value
+        FirstLong = document.getElementById("FirstLong").value
+        SecLat = document.getElementById("SecLat").value
+        SecLong = document.getElementById("SecLong").value
+        console.log("Input values:", FirstLat, FirstLong, SecLat, SecLong)
+        try:
+            lat1 = float(FirstLat)
+            long1 = float(FirstLong)
+            lat2 = float(SecLat)
+            long2 = float(SecLong)
+        except ValueError:
+            alert("Invalid input(s): please enter valid numeric coordinates.")
+            return
+
+        # Calculate the Cartesian distance
+        dx = lat2 - lat1
+        dy = long2 - long1
+        dsquared = dx * dx + dy * dy
+        calculated_distance = dsquared ** 0.5
+        console.log("Calculated distance:", calculated_distance)
+
+        # Display the result in the textarea
+        document.getElementById("Distance").value = 'Calculated Distance: ' + str(calculated_distance)
+    except Exception as e:
+        alert("An error occurred: " + str(e))
+        console.log("Error:", e)
+
+def setup():
+    # Remove the loading message
+    document.getElementById("msg").innerHTML = ''
+    # Create and attach the event listener for the button
+    click_proxy = create_proxy(button_click)
+    document.getElementById("button").addEventListener("click", click_proxy)
+    console.log("Setup complete: Button event listener added.")
+
+setup()
+  </py-script>
+
+  <!-- JavaScript to remove the loading message as a fallback -->
+  <script>
+    document.addEventListener("py-loaded", function(){
+      const msgElem = document.getElementById("msg");
+      if (msgElem) {
+        msgElem.innerHTML = "";
+        console.log("py-loaded event: Loading message cleared.");
+      }
+    });
+    setTimeout(function(){
+      const msgElem = document.getElementById("msg");
+      if (msgElem && msgElem.innerHTML.trim() !== "") {
+        msgElem.innerHTML = "";
+        console.log("Fallback: Loading message cleared after timeout.");
+      }
+    }, 5000);
+  </script>
+</body>
+</html>

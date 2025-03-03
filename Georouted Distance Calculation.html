@@ -1,219 +1,147 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Street Network Distance Calculator</title>
 
-    <title>Georouted Distance Calculator</title>
+    <!-- ✅ Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
 
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin="" />
-    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
-    integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
-
-    <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
-    <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+    <!-- ✅ Leaflet & Routing Machine JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
 
     <style>
-
         body {
-            background-color: #fcfcfc;
-            padding-top: 55px;
-            min-height: 100vh;
-            margin:0;
-            display:flex;
-            flex-direction:column;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
         }
-
-        h1 {
-            text-align:center;
-            font-size: 40px
+        #map {
+            height: 500px;
+            width: 80%;
+            margin: 20px auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
-
-        #container { visibility: hidden; }
-
-        #map { height: 450px; margin: 0 0 10 0; }
-
+        .info-box {
+            background: white;
+            padding: 15px;
+            margin: 20px auto;
+            width: 80%;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: left;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
     </style>
-
 </head>
 <body>
-    <h1><b>Georouted Distance Calculator</b></h1> <br />
 
-    <div class="container">
+    <h1>Street Network Distance Calculator</h1>
 
-        <div id="map"></div>
-
-        <!-- Hidden forms to read PyScript content into -->
-        <input id="FirstLat" type="hidden" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm"/></p>
-        <input id="FirstLong" type="hidden" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm"/></p>
-        <input id="SecLat" type="hidden" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm"/></p>
-        <input id="SecLong" type="hidden" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm"/></p>
-
-	<br/>
-
-    <div id="status"></div>
-
-    <div id="diff"></div>
-        <h1 class="text-center alert alert-info" id="distance">Click the map to begin!</h1>
-
-    <center>
-		<button  class="btn btn-info" type="button" id="button"></button>
-	</center>
+    <div class="info-box">
+        <h2>Why is this one of the best options?</h2>
+        <p>
+            When calculating distances between two locations, many applications rely on APIs like Google Maps or OpenRouteService.
+            However, these APIs require <strong>API keys, rate limits, and sometimes even payment for high usage</strong>.
+        </p>
+        <p>
+            This solution <strong>avoids all these issues</strong> by using <strong>Leaflet Routing Machine</strong>, which is an open-source routing engine based on
+            <strong>OpenStreetMap (OSM) data</strong>. It works <strong>entirely in the browser</strong>, meaning:
+        </p>
+        <ul>
+            <li><strong>No API keys required</strong></li>
+            <li><strong>No request limits or usage fees</strong></li>
+            <li><strong>Fast and accurate street network distances</strong></li>
+            <li><strong>Works offline once loaded</strong></li>
+            <li><strong>Uses OpenStreetMap, a free and open-source mapping service</strong></li>
+        </ul>
+        <p>
+            This method is ideal for <strong>small to medium projects, educational purposes, or anyone who wants a hassle-free way</strong>
+            to calculate distances using real-world roads.
+        </p>
     </div>
 
+    <p>Click two points on the map to calculate the shortest street network distance.</p>
+
+    <div id="map"></div>
+    <div class="info-box">
+        <strong>Distance:</strong> <span id="distance">0 km</span>
+    </div>
+    <button onclick="clearMap()">Reset</button>
 
     <script>
+        let map = L.map('map').setView([42.2823, -71.8087], 13); // Default view
+        let waypoints = [];
+        let control;
 
-        let lat1, lng1, lat2, lng2;
-        let origin = 0;
-        let latlngs = Array();
-
-        let map = L.map('map').setView([42.282280316412546, -71.80865838018761], 13);
-
-        let routePoint = L.featureGroup().addTo(map);
-
-        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '© OpenStreetMap'
+        // Load OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
         }).addTo(map);
 
-        // function to draw marker on map
-        function drawToMap(ev, what) {
+        // Add click event to select waypoints
+        map.on('click', function (e) {
+            if (waypoints.length < 2) {
+                waypoints.push(L.latLng(e.latlng.lat, e.latlng.lng));
+                L.marker(e.latlng).addTo(map);
 
-            let marker = L.marker([ev.latlng.lat, ev.latlng.lng]).addTo(routePoint);
-
-        }
-
-        function clearMap() {
-            latlngs = Array()
-            routePoint.clearLayers();
-        }
-
-        map.addEventListener('click', function(ev) {
-            if (origin == 0) {
-                clearMap()
-
-                // if there is already a marker on the map, do this
-                document.getElementById('status').textContent= "Select Destination on The Map"
-                document.getElementById('FirstLat').value = ev.latlng.lat
-                document.getElementById('FirstLong').value = ev.latlng.lng
-
-
-                latlngs.push([ev.latlng.lat,ev.latlng.lng]);
-
-                drawToMap(ev, "Starting Position");
-
-                origin = 1;
+                if (waypoints.length === 2) {
+                    calculateRoute();
                 }
-
-            else {
-
-                // if there is no marker, push these elements
-                document.getElementById('status').textContent= "Select Origin on The Map"
-                document.getElementById('SecLat').value = ev.latlng.lat
-                document.getElementById('SecLong').value = ev.latlng.lng
-
-                latlngs.push([ev.latlng.lat,ev.latlng.lng]);
-
-                // manually force button click event to activate PyScript on-click listener
-                let manual_event = document.getElementById('button');
-                manual_event.click();
-
-                drawToMap(ev, "Destination Point");
-
-                latlngs.push([ev.latlng.lat, ev.latlng.lng]);
-                let marker = L.marker([ev.latlng.lat, ev.latlng.lng]).addTo(route_polyline);
-
-                origin = 0
-                }
+            }
         });
+
+        // Function to calculate and display the route
+        function calculateRoute() {
+            if (control) {
+                map.removeControl(control);
+            }
+
+            control = L.Routing.control({
+                waypoints: waypoints,
+                createMarker: function () { return null; }, // Hide markers
+                routeWhileDragging: false,
+                show: false
+            }).addTo(map);
+
+            control.on('routesfound', function (e) {
+                let distance_km = (e.routes[0].summary.totalDistance / 1000).toFixed(2);
+                document.getElementById('distance').innerText = distance_km + " km";
+            });
+        }
+
+        // Reset the map and waypoints
+        function clearMap() {
+            waypoints = [];
+            if (control) {
+                map.removeControl(control);
+            }
+            document.getElementById('distance').innerText = "0 km";
+            map.eachLayer(function (layer) {
+                if (layer instanceof L.Marker) {
+                    map.removeLayer(layer);
+                }
+            });
+        }
     </script>
-
-    <div id="storage"></div>
-
-    <py-script output = 'storage'>
-
-from pyodide.http import pyfetch
-from js import document, alert
-from pyodide import create_proxy
-import asyncio
-from math import radians, cos, sin, asin, sqrt
-
-
-def haversine(lon1, lat1, lon2, lat2):
-    """
-    Calculate the great circle distance in kilometers between two points
-    on the earth (specified in decimal degrees)
-    """
-    # convert decimal degrees to radians
-    lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
-
-    # haversine formula
-    dlon = lon2 - lon1
-    dlat = lat2 - lat1
-    a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
-    c = 2 * asin(sqrt(a))
-    r = 6371 # Radius of earth in kilometers
-    return c * r
-
-async def button_click(event):
-    FirstLat = document.getElementById("FirstLat").value
-    FirstLong = document.getElementById('FirstLong').value
-    SecLat = document.getElementById('SecLat').value
-    SecLong = document.getElementById('SecLong').value
-
-    route = []
-
-    headers = {
-        'Accept': 'application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8',
-    }
-
-    response = await pyfetch(url=f"https://api.openrouteservice.org/v2/directions/driving-car?api_key=5b3ce3597851110001cf62487621a9df4b6a49cdbc6f26847723515b&start={FirstLong},{FirstLat}&end={SecLong},{SecLat}", method="GET", headers=headers)
-    response_dict = await response.json()
-
-    # create coordinates object, append it to the coords list for export to javascript
-    coordinates = response_dict['features'][0]['geometry']['coordinates']
-    route.extend(coordinates)
-    route.insert(0, [float(FirstLong), float(FirstLat)])
-    route.append([float(SecLong), float(SecLat)])
-
-    #lon1, lat1, lon2, lat2
-    route_diffs = []
-
-    for i in route: # switch from LongLat to LatLong
-        i[0], i[1] = i[1], i[0]
-
-    for i in range(len(route)): # need to use range len idiom (bad practice) to grab next index value without using itertools
-        try: # pairwise calculation of lat longs in georoute
-            lat1 = route[i][0]
-            lon1 = route[i][1]
-            lat2 = route[i + 1][0]
-            lon2 = route[i + 1][1]
-            difference = haversine(lon1 = lon1, lat1 = lat1, lon2 = lon2, lat2= lat2)
-            route_diffs.append(difference)
-        except IndexError:
-            break
-
-    finaldist = sum(route_diffs)
-
-    # Uncomment this if you would like to see the full route lat long array printed
-    #pyscript.write('storage', route)
-
-    pyscript.write('distance', f'<b>Distance from A to B:</b> {finaldist:.2f} km')
-
-def setup():
-    """
-    Initializes site content and HTML listeners that are typically handled by JavaScript
-    """
-    click_proxy = create_proxy(button_click)
-
-    e = document.getElementById("button")
-    e.addEventListener("click", click_proxy)
-
-setup()
-
-    </py-script>
 
 </body>
 </html>

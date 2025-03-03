@@ -4,231 +4,189 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
- <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
-   integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
-   crossorigin=""/>
+    <!-- Leaflet CSS & JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 
- <!-- Make sure you put this AFTER Leaflet's CSS -->
+    <!-- jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
- <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
-   integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
-   crossorigin=""> </script>
+    <!-- Reference to GeoJSON Data -->
+    <script src="javascript/TravisClusters.js"></script>
 
-   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            text-align: center;
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
 
-<script src="javascript/TravisClusters.js"></script>
+        h3 {
+            color: #333;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
 
-<style type="text/css">
+        .map-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
 
-    .info {
-    padding: 6px 8px;
-    font: 14px/16px Arial, Helvetica, sans-serif;
-    background: white;
-    background: rgba(255,255,255,0.8);
-    box-shadow: 0 0 15px rgba(0,0,0,0.2);
-    border-radius: 5px;
-}
-.info h4 {
-    margin: 0 0 5px;
-    color: #777;
-}
+        .map-wrapper {
+            width: 48%;
+            position: relative;
+        }
 
-.legend {
-    line-height: 18px;
-    color: #555;
-}
-.legend i {
-    width: 18px;
-    height: 18px;
-    float: left;
-    margin-right: 8px;
-    opacity: 0.7;
-}
-  </style>
+        .map-label {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
 
+        .map {
+            width: 100%;
+            height: 500px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .info, .legend {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px;
+            font-size: 14px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            line-height: 18px;
+            color: #555;
+            text-align: left;
+        }
+
+        .legend i {
+            width: 20px;
+            height: 20px;
+            display: inline-block;
+            margin-right: 8px;
+            border-radius: 3px;
+        }
+
+        .content {
+            width: 90%;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            text-align: left;
+        }
+    </style>
 </head>
-<h3> MEASURING LOCAL CONTEXT: USING MACHINE LEARNING AND K-MEANS CLUSTERING OF CONSUMER SURVEY DATA TO APPROXIMATE LOCAL ATTITUDES</h3>
 
 <body>
+    <h3>MEASURING LOCAL CONTEXT: USING MACHINE LEARNING AND K-MEANS CLUSTERING OF CONSUMER SURVEY DATA TO APPROXIMATE LOCAL ATTITUDES</h3>
 
-<div id="mapid" style="width: 100%; height: 600px;"></div>
+    <div class="map-container">
+        <div class="map-wrapper">
+            <div class="map-label">Standard Color Map</div>
+            <div id="mapid1" class="map"></div>
+        </div>
 
-<script>
+        <div class="map-wrapper">
+            <div class="map-label">Colorblind-Friendly Map</div>
+            <div id="mapid2" class="map"></div>
+        </div>
+    </div>
 
-var map = L.map('mapid').setView([31.968599, -99.901810 ], 14);
-
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-}).addTo(map);
-
-var geojson = L.geoJson(TravisClusters).addTo(map);
-
-//If you want your map to appear on the extent of the GeoJson:
-map.fitBounds(geojson.getBounds())
-
-/////////////////////////////////////////////////////////////////////////////
-L.geoJson(TravisClusters).addTo(map);
-
-//test if...else
-// function getColor(d) {
-//      if (d == 1)  { return'#036ffc'}
-//      if (d == 2 )  { return '#fc032c'}
-//      if (d == 3 )  {return'#67fc03' }
-//
-//
-//     // else
-//         // { return '#FFEDA0'}
-//
-//  }
-
-function getColor(d) {
-      if (d === 1 ) { return'#036ffc'}  + 'Cluster 1 (blue color) = Weakest support for environmental initiatives'
-      if (d === 2 ) { return '#fc032c'}  + 'Cluster 2 (red color) = Strong support for environmental initiatives'
-      if (d === 3 ) {return'#67fc03' } + 'Cluster 3 (green color) = Weaker support for environmental initiatives'
-
-    }
-
-
-function style(feature) {
-    return {
-        fillColor: getColor(feature.properties.CLUSTER_ID),
-        weight: 0.2,
-        opacity: 1,
-        color: 'white',
-        dashArray: '1',
-        fillOpacity: 0.7
-    };
-}
-
-L.geoJson(TravisClusters, {style: style}).addTo(map);
-
-function highlightFeature(e) {
-    var layer = e.target;
-
-    layer.setStyle({
-        weight: 5,
-        color: '#666',
-        dashArray: '',
-        fillOpacity: 0.7
-
-
-
-    });
-
-    if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
-        layer.bringToFront();
-
-        info.update(layer.feature.properties);
-    }
-
-}
-
-function resetHighlight(e) {
-    geojson.resetStyle(e.target);
-    info.update();
-}
-
-
-
-function zoomToFeature(e) {
-    map.fitBounds(e.target.getBounds());
-}
-function onEachFeature(feature, layer) {
-    layer.on({
-        mouseover: highlightFeature,
-        mouseout: resetHighlight,
-        click: zoomToFeature
-    });
-}
-
-geojson = L.geoJson(TravisClusters, {
-    style: style,
-    onEachFeature: onEachFeature
-}).addTo(map);
-
-var info = L.control();
-
-info.onAdd = function (map) {
-    this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
-    this.update();
-    return this._div;
-};
-
-// method that we will use to update the control based on feature properties passed
-info.update = function (props) {
-    this._div.innerHTML = '<h4>Clusters of attitudes towards sustainability in Travis County, Texas </h4>' +  (props ?
-        '<b>' + props.CLUSTER_ID + '</b><br />' + props.CLUSTER_ID + ' cluster number'
-        : 'Hover over a Census block group to see the associated color and number');
-};
-
-info.addTo(map);
-
-// var legend = L.control({position: 'bottomright'});
-//
-// legend.onAdd = function (map) {
-//
-//     var div = L.DomUtil.create('div', 'info legend'),
-//         grades = [1,2,3],
-//         labels = [];
-//
-//   //  loop through the items [1,2,3] and assign a color
-//     for (var i = 0; i < grades.length; i++) {
-//         div.innerHTML +=
-//             '<i style="background:' + getColor(grades[i] + 1) + '"></i> ' +
-//             grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
-//     }
-//
-//     return div;
-// };
-//
-// legend.addTo(map);
-
-var legend = L.control({position: 'bottomleft'});
-    legend.onAdd = function (map) {
-
-    var div = L.DomUtil.create('div', 'info legend');
-    labels = ['<strong>Cluster Categories</strong>'],
-    //categories = ['Cluster 1 (blue color) = Weakest support for environmental initiatives ','Cluster 2 (red color) = Strong support for environmental initiatives','Cluster 3 (green color) = Weaker support for environmental initiatives'];
-      categories = [1,2,3]
-
-    for (var i = 0; i < categories.length; i++) {
-
-            div.innerHTML +=
-            labels.push(
-                '<i class="circle" style="background:' + getColor(categories[i]) + '"></i> ' +
-            (categories[i] ? categories[i] : '+'));
-
+    <script>
+        function getColorStandard(d) {
+            return d === 1 ? '#036ffc' :
+                   d === 2 ? '#fc032c' :
+                   d === 3 ? '#67fc03' :
+                   '#ccc';
         }
-        div.innerHTML = labels.join('<br>');
-    return div;
-    };
-    legend.addTo(map);
-/////////////////////////////////////////////////////////////////////////////
 
-</script>
-<p>Cluster 1 (blue color) = Weakest support for environmental initiatives</p>
-<p>Cluster 2 (red color) = Strong support for environmental initiatives</p>
-<p>Cluster 3 (green color) = Weaker support for environmental initiatives </p>
+        function getColorBlind(d) {
+            return d === 1 ? '#E69F00' :
+                   d === 2 ? '#56B4E9' :
+                   d === 3 ? '#009E73' :
+                   '#ccc';
+        }
 
+        function styleStandard(feature) {
+            return { fillColor: getColorStandard(feature.properties.CLUSTER_ID), weight: 1, opacity: 1, color: '#ffffff', dashArray: '3', fillOpacity: 0.75 };
+        }
 
+        function styleBlind(feature) {
+            return { fillColor: getColorBlind(feature.properties.CLUSTER_ID), weight: 1, opacity: 1, color: '#ffffff', dashArray: '3', fillOpacity: 0.75 };
+        }
 
+        function addMap(mapId, styleFunction, getColorFunction, legendTitle) {
+            var map = L.map(mapId).setView([30.3172, -97.7431], 10); // Moved 5 miles north
 
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap contributors' }).addTo(map);
+            L.geoJson(TravisClusters, { style: styleFunction }).addTo(map);
 
+            var legend = L.control({position: 'bottomleft'});
+            legend.onAdd = function (map) {
+                var div = L.DomUtil.create('div', 'info legend');
+                div.innerHTML = `<strong>${legendTitle}</strong><br>`;
+                var categories = [
+                    {id: 1, desc: "Weakest support"},
+                    {id: 2, desc: "Strong support"},
+                    {id: 3, desc: "Moderate support"}
+                ];
+                categories.forEach(category => {
+                    div.innerHTML += `<i style="background:${getColorFunction(category.id)}"></i> Cluster ${category.id} - ${category.desc}<br>`;
+                });
+                return div;
+            };
+            legend.addTo(map);
+        }
 
+        addMap('mapid1', styleStandard, getColorStandard, 'Standard Colors');
+        addMap('mapid2', styleBlind, getColorBlind, 'Colorblind-Friendly');
+    </script>
 
+    <div class="content">
+        <h4>Research Overview</h4>
+        <p>
+            This study investigates the **local context** influencing alternative energy projects at Higher Education Institutions (HEIs). It examines how **state policies, local attitudes, and financial feasibility** shape sustainability commitments.
+        </p>
 
+        <h4>Data Sources</h4>
+        <ul>
+            <li><strong>SimmonsLOCAL Annual Consumer Survey:</strong> Captures consumer attitudes toward environmental responsibility.</li>
+            <li><strong>America’s Goals Report:</strong> Provides state-level sustainability policy indicators.</li>
+        </ul>
 
+        <h4>Key Research Questions</h4>
+        <ul>
+            <li>Do HEIs align their sustainability initiatives with **state** and **local** priorities?</li>
+            <li>How does the **financial feasibility** of alternative energy projects impact their adoption?</li>
+            <li>Can we classify different communities based on their **environmental attitudes**?</li>
+        </ul>
 
+        <h4>K-Means Clustering Methodology</h4>
+        <ul>
+            <li>Data is standardized for consistency.</li>
+            <li>The **K-Means** algorithm partitions areas into distinct clusters.</li>
+            <li>The optimal number of clusters is determined using the **Calinski-Harabasz pseudo-F-statistic**.</li>
+        </ul>
 
-
-
-
-
-
-
-
-
-
-
+        <h4>Findings & Implications</h4>
+        <ul>
+            <li><strong>Cluster 1:</strong> Weakest support for environmental initiatives.</li>
+            <li><strong>Cluster 2:</strong> Strong support for environmental initiatives.</li>
+            <li><strong>Cluster 3:</strong> Moderate support for environmental initiatives.</li>
+        </ul>
+        <p>
+            The results highlight **geographical variations in sustainability attitudes**, suggesting that universities are more likely to invest in sustainable energy when **state policies, financial incentives, and local public support align**.
+        </p>
+    </div>
+</body>
 </html>

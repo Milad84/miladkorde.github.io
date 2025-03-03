@@ -1,209 +1,173 @@
 <!DOCTYPE html>
-
-<html>
+<html lang="en">
 
 <head>
-  <title>Distance Calculator Using Haversine Formula </title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Distance Calculator Using Haversine Formula with User interface</title>
 
-  <!-- Leaflet Libraries Import-->
+    <!-- ✅ Latest Leaflet CSS & JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.1/dist/leaflet.css"
-  integrity="sha256-sA+zWATbFveLLNqWO2gtiw3HL/lh1giY/Inf1BJ0z14="
-  crossorigin=""/>
+    <!-- ✅ Latest PyScript Libraries -->
+    <link rel="stylesheet" href="https://pyscript.net/releases/2022.12.1/pyscript.css" />
+    <script defer src="https://pyscript.net/releases/2022.12.1/pyscript.js"></script>
 
-   <!-- Make sure you put this AFTER Leaflet's CSS -->
- <script src="https://unpkg.com/leaflet@1.9.1/dist/leaflet.js"
- integrity="sha256-NDI0K41gVbWqfkkaHj15IzU7PtMoelkzyKp8TOaFQ3s="
- crossorigin=""></script>
+    <!-- ✅ Bootstrap for Styling -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" />
 
+    <style>
+        body {
+            background-color: #fcfcfc;
+            padding-top: 55px;
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+        }
 
- <!-- Import PyScript Libraries-->
-  <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
-  <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+        #container {
+            visibility: hidden;
+        }
 
+        #map {
+            height: 280px;
+            margin: 0 0 10 0;
+        }
 
-  <!-- bootstrap for styling , Pyscript can also be used for styling instead of bootstrap -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous" />
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+        #button {
+            display: none;
+        }
 
- <style>
- body {
-        background-color: #fcfcfc;
-        padding-top: 55px;
-        min-height: 100vh;
-        margin:0;
-        display:flex;
-        flex-direction:column;
-      }
-
-
-#container{visibility:hidden;}
-
-#map { height: 280px; margin: 0 0 10 0;}
-
-#button {display: none;}
-</style>
+        iframe {
+            width: 100%;
+            height: 300px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+        }
+    </style>
 </head>
 
 <body>
-  <div id="msg">Loading page, please wait ...</div>
+    <div id="msg">Loading page, please wait...</div>
 
-  <br />
-  <br />
+    <br /><br />
 
-  <div class="container"  id="container">
+    <div class="container" id="container">
+        <h1 class="text-center">Calculated Distance Using Haversine Formula</h1>
 
-    <h1 class="text-center">
-        Calculated Distance Using Haversine Formula
-    </h1>
-
-        <!-- div for map-->
+        <!-- Map Div -->
         <div id="map"></div>
 
-        <h3 class="text-center alert alert-info" id="status" >
-            Select Origin  In The Map
+        <h3 class="text-center alert alert-info" id="status">
+            Select Origin In The Map
         </h3>
+
+        <input id="FirstLat" type="hidden" />
+        <input id="FirstLong" type="hidden" />
+        <input id="SecLat" type="hidden" />
+        <input id="SecLong" type="hidden" />
+
         <br />
 
+        <center>
+            <button class="btn btn-info" type="button" id="button">Calculate the Distance Between Two Points</button>
+        </center>
 
-        <p>
-            <input id="FirstLat" type="hidden" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm" placeholder="Enter the Latitude of the first point" /></p>
+        <br />
 
-            <p>
-            <input id="FirstLong" type="hidden" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm" placeholder="Enter the Longitude of the first point" /></p>
-
-            <p>
-            <input id="SecLat" type="hidden" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm" placeholder="Enter the Latitude of the second point" /></p>
-
-            <p>
-            <input id="SecLong" type="hidden" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm" placeholder="Enter the Longitude of the second point" /></p>
-
-
-	<br/>
-
-	 <center>
-		<button  class="btn btn-info" type="button" id="button">Calculate the Distance Between Two Points</button>
-	</center>
-
-  <p>
         <h4>Result:</h4>
-        <textarea id="Distance" class="form-control" rows="2" aria-label="Large" aria-describedby="inputGroup-sizing-sm" placeholder="Result"></textarea></p>
+        <textarea id="Distance" class="form-control" rows="2" placeholder="Result" readonly></textarea>
 
-  <br />
-  <br />
-  </div>
-  <div id="msg">
+        <br />
 
+        <!-- First Point Google Maps -->
+        <div class="container mt-4">
+            <h3 class="text-center">First Point on Google Maps</h3>
+            <iframe id="mapFrame1" src="https://www.google.com/maps?q=0.000000,0.000000&hl=en&z=14&output=embed"></iframe>
+        </div>
+
+        <!-- Second Point Google Maps -->
+        <div class="container mt-4">
+            <h3 class="text-center">Second Point on Google Maps</h3>
+            <iframe id="mapFrame2" src="https://www.google.com/maps?q=0.000000,0.000000&hl=en&z=14&output=embed"></iframe>
+        </div>
+    </div>
 
     <script>
+        let latlngs = [];
+        let origin = 0;
+        let map = L.map('map').setView([51.505, -0.09], 13);
 
-        // variable to store clicked cordinates
-        var lat1, lng1, lat2, lng2;
-        // Flag to check if orgin or destination
-        var origin = 0;
-        //array for polyline marker
-        var latlngs = Array()
-
-
-        // Add the map
-        var map = L.map('map').setView([51.505, -0.09], 13);
-
-         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '© OpenStreetMap'
         }).addTo(map);
 
-        //Layer to add polyline
-        var active_polyline = L.featureGroup().addTo(map);
+        let active_polyline = L.featureGroup().addTo(map);
 
-        //Draw To Map
-        function drawToMap(ev, what){
-
-          //Add Start Marker
-          var marker = L.marker([ev.latlng.lat, ev.latlng.lng]).addTo(active_polyline);
-          marker.bindPopup("<b>"+what+"</b><br> <i>Latitude: </i>"+ev.latlng.lat+" <br/> <i>Longitude: </i>"+ev.latlng.lng).openPopup();
+        function drawToMap(ev, label) {
+            let marker = L.marker([ev.latlng.lat, ev.latlng.lng]).addTo(active_polyline);
+            marker.bindPopup(`<b>${label}</b><br> <i>Latitude: </i>${ev.latlng.lat} <br/> <i>Longitude: </i>${ev.latlng.lng}`).openPopup();
         }
 
-        //rest map
         function clearMap() {
-          latlngs = Array()
-          active_polyline.clearLayers();
+            latlngs = [];
+            active_polyline.clearLayers();
         }
 
-        //Event Listener
-        map.addEventListener('click', function(ev){
-          if (origin == 0){
+        function updateMaps() {
+            let lat1 = document.getElementById("FirstLat").value;
+            let lon1 = document.getElementById("FirstLong").value;
+            let lat2 = document.getElementById("SecLat").value;
+            let lon2 = document.getElementById("SecLong").value;
 
-            //reset
-            clearMap()
+            if (lat1 && lon1) {
+                document.getElementById("mapFrame1").src = `https://www.google.com/maps?q=${lat1},${lon1}&hl=en&z=14&output=embed`;
+            }
+            if (lat2 && lon2) {
+                document.getElementById("mapFrame2").src = `https://www.google.com/maps?q=${lat2},${lon2}&hl=en&z=14&output=embed`;
+            }
+        }
 
-
-            $('#status').text('Select Destination In The Map')
-            $('#FirstLat').val(ev.latlng.lat)
-            $('#FirstLong').val(ev.latlng.lng)
-
-            //push latlong value to array
-            latlngs.push([ev.latlng.lat,ev.latlng.lng]);
-
-            //Add Start Marker
-            drawToMap(ev, "Origin Point")
-
-            origin = 1
-          }else{
-
-            $('#status').text('Select Origin  In The Map')
-            $('#SecLat').val(ev.latlng.lat)
-            $('#SecLong').val(ev.latlng.lng)
-
-            //push latlong value to array
-            latlngs.push([ev.latlng.lat,ev.latlng.lng]);
-
-
-            //trigger #button click event so that PyScript event is triggered
-            $( "#button" ).trigger( "click" );
-
-            //Add Stop Marker
-            drawToMap(ev, "Destination Point")
-
-            latlngs.push([ev.latlng.lat,ev.latlng.lng]);
-            var marker = L.marker([ev.latlng.lat, ev.latlng.lng]).addTo(active_polyline);
-
-            //Draw the polyline
-            var polyline = L.polyline(latlngs, {color: 'red'}).addTo(active_polyline);
-
-            // zoom the map to the polyline
-            map.fitBounds(polyline.getBounds());
-
-            origin = 0
-          }
-
+        map.on('click', function (ev) {
+            if (origin === 0) {
+                clearMap();
+                document.getElementById('status').textContent = 'Select Destination In The Map';
+                document.getElementById('FirstLat').value = ev.latlng.lat;
+                document.getElementById('FirstLong').value = ev.latlng.lng;
+                latlngs.push([ev.latlng.lat, ev.latlng.lng]);
+                drawToMap(ev, "Origin Point");
+                updateMaps();
+                origin = 1;
+            } else {
+                document.getElementById('status').textContent = 'Select Origin In The Map';
+                document.getElementById('SecLat').value = ev.latlng.lat;
+                document.getElementById('SecLong').value = ev.latlng.lng;
+                latlngs.push([ev.latlng.lat, ev.latlng.lng]);
+                document.getElementById("button").click();
+                drawToMap(ev, "Destination Point");
+                let polyline = L.polyline(latlngs, { color: 'red' }).addTo(active_polyline);
+                map.fitBounds(polyline.getBounds());
+                updateMaps();
+                origin = 0;
+            }
         });
+    </script>
 
-
-
-
-  </script>
-
-  <py-script>
+    <py-script>
 from js import document, alert
-#imported this to create a proxy function that will not execute when the page is loaded
 from pyodide import create_proxy
-#imported to do maths calculation for curvature
 from math import radians, cos, sin, asin, sqrt
 
-
-
 def button_click(event):
-
     FirstLat = document.getElementById("FirstLat").value
-    FirstLong= document.getElementById('FirstLong').value
-    SecLat= document.getElementById('SecLat').value
-    SecLong= document.getElementById('SecLong').value
-
-
-# attempt conversion of input and alert if any of them
-# aren't valid conversions
+    FirstLong = document.getElementById("FirstLong").value
+    SecLat = document.getElementById("SecLat").value
+    SecLong = document.getElementById("SecLong").value
 
     try:
         first_lat = float(FirstLat)
@@ -211,62 +175,38 @@ def button_click(event):
         sec_lat = float(SecLat)
         sec_long = float(SecLong)
     except ValueError:
-        alert("Invalid inputs, please make sure you have valid coordinates input.")
+        alert("Invalid inputs. Please select valid coordinates.")
         return False
 
-
-    dx = sec_lat - first_lat
-    dy = sec_long - first_long
-    dsquared = dx*dx + dy*dy
-    calculated_distance = dsquared**0.5
-
-# to calculate with curvature using Haversine Formula
-    first_lat_rad = radians(first_lat)
-    sec_lat_rad = radians(sec_lat)
-    first_long_rad = radians(first_long)
-    sec_long_rad = radians(sec_long)
-
-# Calculating using the Haversine formula
-    dlon = sec_long_rad - first_long_rad
-    dlat = sec_lat_rad - first_lat_rad
-    a = sin(dlat / 2)**2 + cos(first_lat_rad) * cos(sec_lat_rad) * sin(dlon / 2)**2
-
+    dlon = sec_long - first_long
+    dlat = sec_lat - first_lat
+    a = sin(dlat / 2)**2 + cos(first_lat) * cos(sec_lat) * sin(dlon / 2)**2
     c = 2 * asin(sqrt(a))
 
-# We define the radius of the earth in miles
     r = 6371
-
-# calculate the result
     calculated_distance = c * r
 
- #display the result
-    document.getElementById("Distance").innerHTML = 'Calculated Distance: ' + str(calculated_distance)
-
+    document.getElementById("Distance").innerText = f"Calculated Distance: {calculated_distance:.2f} km"
 
 def setup():
-	# The page is ready, clear the "page loading"
-	document.getElementById("msg").style.display = "none";
-	document.getElementById("container").style.visibility = "visible";
-
-	# Create a JsProxy for the callback function
-	click_proxy = create_proxy(button_click)
-
-	# Set the listener to the callback
-	e = document.getElementById("button")
-	e.addEventListener("click", click_proxy)
+    document.getElementById("msg").style.display = "none"
+    document.getElementById("container").style.visibility = "visible"
+    click_proxy = create_proxy(button_click)
+    document.getElementById("button").addEventListener("click", click_proxy)
 
 setup()
+    </py-script>
 
+    <div>
+        <h4 class="text-center">
+            To calculate the distance based on a network of roads with a UI, please click the following link!
+        </h4>
+        <center>
+            <a href="Georouted Distance Calculation.html" class="nav-link">
+                Distance Calculator Based on a Network of Roads
+            </a>
+        </center>
+    </div>
 
-  </py-script>
-  <div >
-
-    <h4 class="text-center">
-        To calculate the distance based on a network of roads with a UI please click the following link!
-    </h4>
-    <center>
-          <a href="Georouted Distance Calculation.html" class="nav-link" center>Distance Calculator Based on a network of roads called from an API with User Interface</a>
-    </center>
-  </div>
 </body>
 </html>
