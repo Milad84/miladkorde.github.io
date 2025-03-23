@@ -24,6 +24,34 @@
             line-height: 1.6;
         }
 
+        /* Navigation Row Styles */
+        .nav-row {
+          text-align: center;
+          margin-bottom: 20px;
+        }
+        .nav-list {
+          list-style: none;
+          padding: 0;
+          margin: 0;
+        }
+        .nav-item {
+          display: inline-block;
+          margin: 0 5px;
+        }
+        .nav-link {
+          background-color: #007bff;
+          color: white;
+          padding: 10px 20px;
+          border-radius: 5px;
+          text-decoration: none;
+          font-size: 1.1rem;
+          box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+          margin-top: 10px;
+        }
+        .nav-link:hover {
+          background-color: #0056b3;
+        }
+
         h3 {
             color: #333;
             font-size: 20px;
@@ -88,6 +116,22 @@
 </head>
 
 <body>
+    <!-- Navigation Row -->
+    <div class="nav-row">
+      <ul class="nav-list">
+        <li class="nav-item"><a href="index.html" class="nav-link active">Home</a></li>
+        <li class="nav-item"><a href="experience.html" class="nav-link">Portfolio</a></li>
+        <li class="nav-item"><a href="resume.html" class="nav-link">Resume and Curriculum</a></li>
+        <li class="nav-item"><a href="Distance Calculator.html" class="nav-link">Distance Calculator Series</a></li>
+        <li class="nav-item"><a href="GeoLocator.html" class="nav-link">Geo Locator</a></li>
+        <li class="nav-item"><a href="LeafLet Layer.html" class="nav-link">Leaflet.js Implementation</a></li>
+        <li class="nav-item"><a href="Dissertation.html" class="nav-link">Dissertation</a></li>
+        <li class="nav-item"><a href="Music.html" class="nav-link">Music</a></li>
+        <li class="nav-item"><a href="https://medium.com/@milad.kordeh" class="nav-link" target="_blank">Medium</a></li>
+        <li class="nav-item"><a href="https://miladkordeh.wordpress.com/" class="nav-link" target="_blank">My Weblog</a></li>
+      </ul>
+    </div>
+
     <h3>MEASURING LOCAL CONTEXT: USING MACHINE LEARNING AND K-MEANS CLUSTERING OF CONSUMER SURVEY DATA TO APPROXIMATE LOCAL ATTITUDES</h3>
 
     <div class="map-container">
@@ -126,9 +170,11 @@
         }
 
         function addMap(mapId, styleFunction, getColorFunction, legendTitle) {
-            var map = L.map(mapId).setView([30.3172, -97.7431], 10); // Moved 5 miles north
+            var map = L.map(mapId).setView([30.3172, -97.7431], 10); // Centered on Travis area
 
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap contributors' }).addTo(map);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(map);
             L.geoJson(TravisClusters, { style: styleFunction }).addTo(map);
 
             var legend = L.control({position: 'bottomleft'});
@@ -155,7 +201,7 @@
     <div class="content">
         <h4>Research Overview</h4>
         <p>
-            This study investigates the **local context** influencing alternative energy projects at Higher Education Institutions (HEIs). It examines how **state policies, local attitudes, and financial feasibility** shape sustainability commitments.
+            This study investigates the <strong>local context</strong> influencing alternative energy projects at Higher Education Institutions (HEIs). It examines how <strong>state policies, local attitudes, and financial feasibility</strong> shape sustainability commitments.
         </p>
 
         <h4>Data Sources</h4>
@@ -166,16 +212,16 @@
 
         <h4>Key Research Questions</h4>
         <ul>
-            <li>Do HEIs align their sustainability initiatives with **state** and **local** priorities?</li>
-            <li>How does the **financial feasibility** of alternative energy projects impact their adoption?</li>
-            <li>Can we classify different communities based on their **environmental attitudes**?</li>
+            <li>Do HEIs align their sustainability initiatives with <strong>state</strong> and <strong>local</strong> priorities?</li>
+            <li>How does the <strong>financial feasibility</strong> of alternative energy projects impact their adoption?</li>
+            <li>Can we classify different communities based on their <strong>environmental attitudes</strong>?</li>
         </ul>
 
         <h4>K-Means Clustering Methodology</h4>
         <ul>
             <li>Data is standardized for consistency.</li>
-            <li>The **K-Means** algorithm partitions areas into distinct clusters.</li>
-            <li>The optimal number of clusters is determined using the **Calinski-Harabasz pseudo-F-statistic**.</li>
+            <li>The <strong>K-Means</strong> algorithm partitions areas into distinct clusters.</li>
+            <li>The optimal number of clusters is determined using the <strong>Calinski-Harabasz pseudo-F-statistic</strong>.</li>
         </ul>
 
         <h4>Findings & Implications</h4>
@@ -185,7 +231,7 @@
             <li><strong>Cluster 3:</strong> Moderate support for environmental initiatives.</li>
         </ul>
         <p>
-            The results highlight **geographical variations in sustainability attitudes**, suggesting that universities are more likely to invest in sustainable energy when **state policies, financial incentives, and local public support align**.
+            The results highlight <strong>geographical variations in sustainability attitudes</strong>, suggesting that universities are more likely to invest in sustainable energy when <strong>state policies, financial incentives, and local public support align</strong>.
         </p>
     </div>
 </body>

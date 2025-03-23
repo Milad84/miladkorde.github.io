@@ -2,44 +2,76 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Distance Calculator Using Haversine Formula with User interface</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Distance Calculator Using Haversine Formula with User Interface</title>
 
-    <!-- ✅ Latest Leaflet CSS & JS -->
+    <!-- Latest Leaflet CSS & JS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-    <!-- ✅ Latest PyScript Libraries -->
+    <!-- Latest PyScript Libraries -->
     <link rel="stylesheet" href="https://pyscript.net/releases/2022.12.1/pyscript.css" />
     <script defer src="https://pyscript.net/releases/2022.12.1/pyscript.js"></script>
 
-    <!-- ✅ Bootstrap for Styling -->
+    <!-- Bootstrap for Styling -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" />
 
     <style>
         body {
             background-color: #fcfcfc;
-            padding-top: 55px;
+            /* Remove extra top padding */
+            padding-top: 0;
             min-height: 100vh;
             margin: 0;
             display: flex;
             flex-direction: column;
+            font-family: Arial, sans-serif;
         }
-
-        #container {
-            visibility: hidden;
+        /* Navigation row styling */
+        .nav-row {
+            text-align: center;
+            padding: 10px 0;
+            background-color: #f0f4f8;
         }
-
+        .nav-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .nav-item {
+            display: inline-block;
+            margin: 0 5px;
+        }
+        .nav-link,
+        .latlong-btn {
+            display: inline-block;
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 1.1rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            margin-top: 10px;
+        }
+        .nav-link:hover,
+        .latlong-btn:hover {
+            background-color: #0056b3;
+        }
+        /* Container */
+        .container {
+            margin-top: 20px;
+        }
+        /* Map styling */
         #map {
             height: 280px;
-            margin: 0 0 10 0;
+            margin-bottom: 10px;
         }
-
+        /* Hide the button element as before */
         #button {
             display: none;
         }
-
         iframe {
             width: 100%;
             height: 300px;
@@ -48,52 +80,79 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             margin-bottom: 20px;
         }
+        /* New row-container for small Google Maps windows */
+        .row-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .map-container {
+            flex: 1 1 45%;
+            min-width: 250px;
+            background-color: #f7f9fc;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .map-container h6 {
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
     </style>
 </head>
 
 <body>
-    <div id="msg">Loading page, please wait...</div>
-
-    <br /><br />
+    <!-- Navigation Row -->
+    <div class="nav-row">
+        <ul class="nav-list">
+            <li class="nav-item"><a href="index.html" class="nav-link active">Home</a></li>
+            <li class="nav-item"><a href="experience.html" class="nav-link">Portfolio</a></li>
+            <li class="nav-item"><a href="resume.html" class="nav-link">Resume and Curriculum</a></li>
+            <li class="nav-item"><a href="Distance Calculator.html" class="nav-link">Distance Calculator Series</a></li>
+            <li class="nav-item"><a href="GeoLocator.html" class="nav-link">Geo Locator</a></li>
+            <li class="nav-item"><a href="LeafLet Layer.html" class="nav-link">Leafet.js Implementation</a></li>
+            <li class="nav-item"><a href="Dissertation.html" class="nav-link">Dissertation</a></li>
+            <li class="nav-item"><a href="Music.html" class="nav-link">Music</a></li>
+            <li class="nav-item"><a href="https://medium.com/@milad.kordeh" class="nav-link" target="_blank">Medium</a></li>
+            <li class="nav-item"><a href="https://miladkordeh.wordpress.com/" class="nav-link" target="_blank">My Weblog</a></li>
+        </ul>
+    </div>
 
     <div class="container" id="container">
         <h1 class="text-center">Calculated Distance Using Haversine Formula</h1>
 
-        <!-- Map Div -->
+        <!-- Leaflet Map Div -->
         <div id="map"></div>
 
-        <h3 class="text-center alert alert-info" id="status">
-            Select Origin In The Map
-        </h3>
+        <h3 class="text-center alert alert-info" id="status">Select Origin In The Map</h3>
 
+        <!-- Hidden coordinate inputs -->
         <input id="FirstLat" type="hidden" />
         <input id="FirstLong" type="hidden" />
         <input id="SecLat" type="hidden" />
         <input id="SecLong" type="hidden" />
 
-        <br />
-
+        <!-- The calculation button remains hidden (triggered by map click) -->
         <center>
             <button class="btn btn-info" type="button" id="button">Calculate the Distance Between Two Points</button>
         </center>
 
-        <br />
-
         <h4>Result:</h4>
         <textarea id="Distance" class="form-control" rows="2" placeholder="Result" readonly></textarea>
 
-        <br />
-
-        <!-- First Point Google Maps -->
-        <div class="container mt-4">
-            <h3 class="text-center">First Point on Google Maps</h3>
-            <iframe id="mapFrame1" src="https://www.google.com/maps?q=0.000000,0.000000&hl=en&z=14&output=embed"></iframe>
-        </div>
-
-        <!-- Second Point Google Maps -->
-        <div class="container mt-4">
-            <h3 class="text-center">Second Point on Google Maps</h3>
-            <iframe id="mapFrame2" src="https://www.google.com/maps?q=0.000000,0.000000&hl=en&z=14&output=embed"></iframe>
+        <!-- Row container for small Google Maps windows -->
+        <div class="row-container">
+            <div class="map-container">
+                <h6>First Point on Google Maps</h6>
+                <iframe id="mapFrame1" src="https://www.google.com/maps?q=0,0&hl=en&z=14&output=embed"></iframe>
+            </div>
+            <div class="map-container">
+                <h6>Second Point on Google Maps</h6>
+                <iframe id="mapFrame2" src="https://www.google.com/maps?q=0,0&hl=en&z=14&output=embed"></iframe>
+            </div>
         </div>
     </div>
 
@@ -111,7 +170,7 @@
 
         function drawToMap(ev, label) {
             let marker = L.marker([ev.latlng.lat, ev.latlng.lng]).addTo(active_polyline);
-            marker.bindPopup(`<b>${label}</b><br> <i>Latitude: </i>${ev.latlng.lat} <br/> <i>Longitude: </i>${ev.latlng.lng}`).openPopup();
+            marker.bindPopup(`<b>${label}</b><br><i>Latitude:</i> ${ev.latlng.lat}<br><i>Longitude:</i> ${ev.latlng.lng}`).openPopup();
         }
 
         function clearMap() {
@@ -170,27 +229,26 @@ def button_click(event):
     SecLong = document.getElementById("SecLong").value
 
     try:
-        first_lat = float(FirstLat)
-        first_long = float(FirstLong)
-        sec_lat = float(SecLat)
-        sec_long = float(SecLong)
+        # Convert string inputs to float and then to radians
+        first_lat = radians(float(FirstLat))
+        first_long = radians(float(FirstLong))
+        sec_lat = radians(float(SecLat))
+        sec_long = radians(float(SecLong))
     except ValueError:
         alert("Invalid inputs. Please select valid coordinates.")
         return False
 
-    dlon = sec_long - first_long
+    # Haversine formula calculation
     dlat = sec_lat - first_lat
+    dlon = sec_long - first_long
     a = sin(dlat / 2)**2 + cos(first_lat) * cos(sec_lat) * sin(dlon / 2)**2
     c = 2 * asin(sqrt(a))
-
-    r = 6371
+    r = 6371  # Earth's radius in kilometers
     calculated_distance = c * r
 
     document.getElementById("Distance").innerText = f"Calculated Distance: {calculated_distance:.2f} km"
 
 def setup():
-    document.getElementById("msg").style.display = "none"
-    document.getElementById("container").style.visibility = "visible"
     click_proxy = create_proxy(button_click)
     document.getElementById("button").addEventListener("click", click_proxy)
 
@@ -207,6 +265,5 @@ setup()
             </a>
         </center>
     </div>
-
 </body>
 </html>

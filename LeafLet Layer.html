@@ -1,25 +1,215 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Leaflet Texas County Map & Adjacency</title>
 
-    <!--Leaflet files if you want to call css and js from the web-->
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <!-- PyScript CSS and JS -->
+  <link rel="stylesheet" href="https://pyscript.net/releases/2022.12.1/pyscript.css" />
+  <script defer src="https://pyscript.net/releases/2022.12.1/pyscript.js"></script>
 
-    <!-- Leaflet files if you want to call your own package. Remember to install leaflet by npm init-->
-    <link rel= "stylesheer" href="./node_modules/leaflet/dist/leaflet.css">
-    <script src="./node_modules/leaflet/dist/leaflet.js"></script>
+  <!-- Leaflet CSS and JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 
-    <title>Leaflet Map</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap');
+    body {
+      margin: 0;
+      padding: 20px;
+      background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
+      font-family: 'Roboto', sans-serif;
+    }
+    /* Navigation Row */
+    .nav-row {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .nav-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .nav-item {
+      display: inline-block;
+      margin: 0 5px;
+    }
+    .nav-link {
+      background-color: #007bff;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      text-decoration: none;
+      font-size: 1.1rem;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      margin-top: 10px;
+    }
+    .nav-link:hover {
+      background-color: #0056b3;
+    }
+    /* Map container with reduced height */
+    #map {
+      width: 100%;
+      height: 420px;
+    }
+    /* Container for PyScript output */
+    .output-box {
+      background: #f7f9fc;
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 20px;
+      font-family: monospace;
+      color: #444;
+      white-space: pre-wrap;
+    }
+    /* Styling for the description section */
+    #description {
+      max-width: 1000px;
+      width: 90%;
+      margin: 20px auto;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      font-size: 1.1rem;
+      line-height: 1.6;
+    }
+    #description h2 {
+      margin-top: 0;
+    }
+    #description ul {
+      text-align: left;
+      margin: 10px 0 0 20px;
+    }
+    #description a {
+      color: #007bff;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    #description a:hover {
+      text-decoration: underline;
+    }
+  </style>
+
+  <!-- PyScript config: Request the shapely package -->
+  <py-config>
+    packages = ["shapely"]
+  </py-config>
 </head>
+
 <body>
-    <h1> Leaflet Basic! Click on counties to see the names!</h1>
-    <div id="map" style="width: 100%; height:600px;"></div>
+  <!-- Navigation Row -->
+  <div class="nav-row">
+    <ul class="nav-list">
+      <li class="nav-item"><a href="index.html" class="nav-link active">Home</a></li>
+      <li class="nav-item"><a href="experience.html" class="nav-link">Portfolio</a></li>
+      <li class="nav-item"><a href="resume.html" class="nav-link">Resume and Curriculum</a></li>
+      <li class="nav-item"><a href="Distance Calculator.html" class="nav-link">Distance Calculator Series</a></li>
+      <li class="nav-item"><a href="GeoLocator.html" class="nav-link">Geo Locator</a></li>
+      <li class="nav-item"><a href="LeafLet Layer.html" class="nav-link">Leaflet.js Implementation</a></li>
+      <li class="nav-item"><a href="Dissertation.html" class="nav-link">Dissertation</a></li>
+      <li class="nav-item"><a href="Music.html" class="nav-link">Music</a></li>
+      <li class="nav-item"><a href="https://medium.com/@milad.kordeh" class="nav-link" target="_blank">Medium</a></li>
+      <li class="nav-item"><a href="https://miladkordeh.wordpress.com/" class="nav-link" target="_blank">My Weblog</a></li>
+    </ul>
+  </div>
+
+  <!-- Description Section with Bullet Points -->
+  <div id="description">
+    <h2>Interactive Spatial Analysis on the Web</h2>
+    <ul>
+      <li><strong>Dynamic Mapping:</strong> Built with Leaflet, this interactive map integrates spatial data directly into your browser.</li>
+      <li><strong>On-the-Fly Analysis:</strong> Using PyScript and Shapely, we perform real-time spatial analysis to compute neighboring counties for Texas.</li>
+      <li><strong>Scientific Approach:</strong> The analysis determines if county boundaries touch, ensuring robust spatial measurements.</li>
+      <li><strong>Learn More:</strong> For an in-depth discussion on geostatistical predicted surfaces and spatial autocorrelation, check out my detailed post on my old weblog <a href="https://miladkordeh.wordpress.com/2020/07/14/what-tutorials-will-not-tell-you-on-geostatistical-predicted-surfaces-in-r-and-arcgis-pro-part-1-spatial-autocorrelation/" target="_blank">here</a>.</li>
+      <li><strong>Web-Based Power:</strong> Experience the cutting edge of spatial analysis performed directly on the web.</li>
+    </ul>
+  </div>
+
+  <!-- Map Container -->
+  <div id="map"></div>
+
+  <!-- Output Container for Adjacency Analysis -->
+  <div class="output-box" id="adjOutput"></div>
+
+  <!-- External Script References -->
+  <script src="data/map-geojson.js"></script>
+  <script src="data/TexasCounty.js"></script>
+  <script src="javascript/main.js"></script>
+
+  <!-- PyScript Block: Compute and Display Adjacency Analysis -->
+  <py-script>
+import json
+from shapely.geometry import shape
+from pyscript import display
+import statistics
+from js import window
+
+try:
+    TexCounty = window.TexCounty
+except Exception as e:
+    display("Error: TexCounty variable not defined. Check your data/TexasCounty.js file.", target="adjOutput")
+    raise e
+
+txcounty_dict = TexCounty.to_py()
+features = txcounty_dict.get("features", [])
+
+if not features:
+    result_str = "No features found in TexCounty data."
+else:
+    polygons = []
+    county_names = []
+    for i, feature in enumerate(features):
+        if feature.get("geometry"):
+            polygons.append(shape(feature.get("geometry")))
+            name = feature.get("properties", {}).get("name", f"County {i+1}")
+            county_names.append(name)
+
+    def is_neighbor(p1, p2):
+        return p1.touches(p2)
+
+    n = len(polygons)
+    adj_matrix = [[0] * n for _ in range(n)]
+    for i in range(n):
+        for j in range(n):
+            if i != j and is_neighbor(polygons[i], polygons[j]):
+                adj_matrix[i][j] = 1
+
+    num_neighbors = [sum(row) for row in adj_matrix]
+    avg_neighbors = sum(num_neighbors) / n if n > 0 else 0
+
+    max_neighbors = max(num_neighbors)
+    min_neighbors = min(num_neighbors)
+    max_index = num_neighbors.index(max_neighbors)
+    min_index = num_neighbors.index(min_neighbors)
+    county_max = county_names[max_index]
+    county_min = county_names[min_index]
+
+    try:
+        mode_neighbors = statistics.mode(num_neighbors)
+    except statistics.StatisticsError:
+        mode_neighbors = statistics.multimode(num_neighbors)
+
+    result_str = "TexCounty Adjacency Calculation (Scientific Approach):\n"
+    result_str += f"Number of counties: {n}\n"
+    result_str += f"Average number of neighbors: {avg_neighbors:.2f}\n"
+    result_str += f"County with most neighbors: {county_max} ({max_neighbors} neighbors)\n"
+    result_str += f"County with least neighbors: {county_min} ({min_neighbors} neighbors)\n"
+    result_str += f"Mode of neighbors: {mode_neighbors}\n"
+
+    display(result_str, target="adjOutput")
+  </py-script>
+
+  <!-- Inline JavaScript: Adjust County Outline Thickness -->
+  <script>
+    // Wait for the window to load and then adjust the style of the county GeoJSON layer.
+    window.addEventListener("load", function() {
+      if (window.countyLayer) {
+        // Set a thinner outline by reducing the stroke weight.
+        window.countyLayer.setStyle({ weight: 1 });
+      }
+    });
+  </script>
 </body>
 </html>
-
-<script src="data/map-geojson.js"> </script>
-<script src="data/TexasCounty.js"> </script>
-<script src="javascript/main.js"> </script>

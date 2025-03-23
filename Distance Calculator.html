@@ -9,6 +9,10 @@
   <link rel="stylesheet" href="https://pyscript.net/releases/2022.12.1/pyscript.css" />
   <script defer src="https://pyscript.net/releases/2022.12.1/pyscript.js"></script>
 
+  <!-- Leaflet CSS and JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script defer src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap');
 
@@ -18,9 +22,10 @@
       background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
       font-family: 'Roboto', sans-serif;
     }
+    /* Wider, responsive container */
     .container {
       background: #fff;
-      max-width: 800px;
+      max-width: 1200px;
       margin: 40px auto;
       padding: 30px;
       border-radius: 10px;
@@ -38,22 +43,22 @@
       font-size: 1rem;
       line-height: 1.6;
     }
-    input {
-      width: 100%;
-      padding: 12px;
-      margin: 10px 0;
-      font-size: 1rem;
+    /* Smaller inputs for coordinates */
+    .small-input {
+      width: 80px;
+      padding: 8px;
+      margin: 5px;
+      font-size: 0.9rem;
       border: 1px solid #ccc;
       border-radius: 5px;
       transition: border-color 0.3s ease;
     }
-    input:focus {
+    .small-input:focus {
       border-color: #007bff;
       outline: none;
     }
     button {
-      width: 100%;
-      padding: 12px;
+      padding: 10px 20px;
       font-size: 1rem;
       color: #fff;
       background-color: #007bff;
@@ -62,6 +67,9 @@
       cursor: pointer;
       transition: background-color 0.3s ease;
       margin-top: 20px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
     }
     button:hover {
       background-color: #0056b3;
@@ -73,17 +81,19 @@
       font-weight: bold;
       color: #007bff;
     }
-    .map-container {
+    /* Navigation row styling (same as before) */
+    .nav-row {
       text-align: center;
-      margin-top: 20px;
-    }
-    iframe {
-      width: 100%;
-      height: 300px;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
       margin-bottom: 20px;
+    }
+    .nav-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .nav-item {
+      display: inline-block;
+      margin: 0 5px;
     }
     .nav-link, .latlong-btn {
       display: inline-block;
@@ -99,64 +109,133 @@
     .nav-link:hover, .latlong-btn:hover {
       background-color: #0056b3;
     }
+    /* Horizontal layout for coordinate inputs and maps */
+    .row-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-top: 20px;
+    }
+    .point-input, .map-container {
+      flex: 1 1 22%;  /* four components per row */
+      min-width: 200px;
+    }
+    .point-input {
+      background: #f7f9fc;
+      padding: 10px;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    .point-input h4 {
+      margin-bottom: 10px;
+    }
+    .map-container iframe {
+      width: 100%;
+      height: 200px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    /* Leaflet map container */
+    #leafletMap {
+      width: 100%;
+      height: 300px;
+      margin-top: 20px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+    }
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .row-container {
+        flex-direction: column;
+        align-items: center;
+      }
+      .point-input, .map-container {
+        flex: 1 1 90%;
+      }
+    }
   </style>
 </head>
 <body>
+  <!-- Navigation Row (replicated from your second page) -->
+  <div class="nav-row">
+    <ul class="nav-list">
+      <li class="nav-item"><a href="index.html" class="nav-link active">Home</a></li>
+      <li class="nav-item"><a href="experience.html" class="nav-link">Portfolio</a></li>
+      <li class="nav-item"><a href="resume.html" class="nav-link">Resume and Curriculum</a></li>
+      <li class="nav-item"><a href="Distance Calculator.html" class="nav-link">Distance Calculator Series</a></li>
+      <li class="nav-item"><a href="GeoLocator.html" class="nav-link">Geo Locator</a></li>
+      <li class="nav-item"><a href="LeafLet Layer.html" class="nav-link">Leafet.js Implementation</a></li>
+      <li class="nav-item"><a href="Dissertation.html" class="nav-link">Dissertation</a></li>
+      <li class="nav-item"><a href="Music.html" class="nav-link">Music</a></li>
+      <li class="nav-item"><a href="https://medium.com/@milad.kordeh" class="nav-link" target="_blank">Medium</a></li>
+      <li class="nav-item"><a href="https://miladkordeh.wordpress.com/" class="nav-link" target="_blank">My Weblog</a></li>
+    </ul>
+  </div>
+
   <div class="container">
     <h1>Distance Calculator</h1>
 
     <div class="intro">
       <p><strong>I believe that distance calculation is the core of GIS.</strong></p>
-      <p>In the vast realm of GIS, distance is nothing short of a golden thread
-         that weaves through every map, analysis, and decision.
-         The invisible ruler measures not just space but the essence of connectivity,
-          accessibility, and relationships within our world.</p>
-      <p>From helping urban planners design efficient transportation
-        networks to aiding ecologists in understanding wildlife migration
-        patterns, distance in GIS is our compass, guiding us toward informed
-         solutions and deeper insights.</p>
-      <p>The following is an educational project to create a series of
-        applications that can calculate the distance between two points.
-        The current page is a prototype using the Cartesian coordinate system. Note the unit of measurment (units).
-        The distance is based on an imaginary coordinate system. So do not be surprised if you do not see Kilometers or Miles.
-        Links at the end of every page will take you to more advanced approaches.</p>
+      <p>Distance calculation lies at the heart of Geographic Information Systems (GIS).
+         It is the golden thread that weaves through every map, analysis, and decision,
+         serving as an invisible ruler that measures not only space but also the connectivity,
+         accessibility, and relationships that shape our world.</p>
+      <p>Whether it's aiding urban planners in designing efficient transportation networks or helping ecologists
+         understand wildlife migration patterns, distance in GIS acts as a guiding compass—steering us toward
+         informed solutions and deeper insights.</p>
+      <p>This educational project, inspired by my upcoming book for programmers eager to learn GIS,
+         demonstrates how to build applications that calculate the distance between two points.
+         The current page showcases a prototype based on the Cartesian coordinate system. Please note that
+         distances are expressed in abstract units rather than in Kilometers or Miles, reflecting the use of an
+         imaginary coordinate system. Links provided at the end of each page will lead you to more advanced approaches.</p>
     </div>
 
-    <h3>Enter coordinates for two points</h3>
-
-    <h4>First Point</h4>
-    <input id="FirstLat" type="text" placeholder="Latitude" />
-    <input id="FirstLong" type="text" placeholder="Longitude" />
-
-    <h4>Second Point</h4>
-    <input id="SecLat" type="text" placeholder="Latitude" />
-    <input id="SecLong" type="text" placeholder="Longitude" />
+    <!-- Horizontal layout: Two input boxes and two map previews in one row -->
+    <div class="row-container">
+      <!-- First Point Coordinates -->
+      <div class="point-input">
+        <h4>First Point</h4>
+        <input id="FirstLat" class="small-input" type="text" placeholder="Lat" />
+        <input id="FirstLong" class="small-input" type="text" placeholder="Long" />
+      </div>
+      <!-- First Point Google Map -->
+      <div class="map-container">
+        <h4>Map 1</h4>
+        <iframe id="mapFrame1" src="https://www.google.com/maps?q=0,0&hl=en&z=14&output=embed"></iframe>
+      </div>
+      <!-- Second Point Coordinates -->
+      <div class="point-input">
+        <h4>Second Point</h4>
+        <input id="SecLat" class="small-input" type="text" placeholder="Lat" />
+        <input id="SecLong" class="small-input" type="text" placeholder="Long" />
+      </div>
+      <!-- Second Point Google Map -->
+      <div class="map-container">
+        <h4>Map 2</h4>
+        <iframe id="mapFrame2" src="https://www.google.com/maps?q=0,0&hl=en&z=14&output=embed"></iframe>
+      </div>
+    </div>
 
     <button id="button">Calculate Distance</button>
-
     <div class="result" id="result"></div>
 
-    <!-- First Point Map -->
-    <div class="map-container">
-      <h3>First Point on Map</h3>
-      <iframe
-          id="mapFrame1"
-          src="https://www.google.com/maps?q=0.000000,0.000000&hl=en&z=14&output=embed">
-      </iframe>
-    </div>
+    <!-- Leaflet Basemap with new title -->
+    <h3>Straight line between the two points</h3>
+    <div id="leafletMap"></div>
+    <p style="text-align: center; margin-top: 10px; font-size: 0.9rem; color: #555;">
+      Note: Calculating distance using the Euclidean method on a Cartesian coordinate system assumes a flat plane.
+      In reality, the Earth is curved, so this method does not account for the planet’s curvature,
+      which can lead to inaccuracies especially over large distances.
+    </p>
 
-    <!-- Second Point Map -->
-    <div class="map-container">
-      <h3>Second Point on Map</h3>
-      <iframe
-          id="mapFrame2"
-          src="https://www.google.com/maps?q=0.000000,0.000000&hl=en&z=14&output=embed">
-      </iframe>
-    </div>
-
-    <!-- Navigation Link -->
+    <!-- Navigation Link for advanced method -->
     <div>
-      <h4 class="text-center">To calculate the distance based on the curvature of the Earth, please click the following link!</h4>
+      <h4>For distance calculation based on the Earth's curvature, click below:</h4>
       <center>
         <a href="Distance Calculator_Haversine Formula.html" class="nav-link">
           Distance Calculator Based on the Curvature of the Earth
@@ -173,8 +252,7 @@ import math
 def cartesian_distance(lat1, lon1, lat2, lon2):
     dx = lat2 - lat1
     dy = lon2 - lon1
-    dsquared = dx**2 + dy**2
-    return math.sqrt(dsquared)
+    return math.sqrt(dx**2 + dy**2)
 
 def calculate_distance(event):
     try:
@@ -193,20 +271,53 @@ document.getElementById("button").addEventListener("click", create_proxy(calcula
   </py-script>
 
   <script>
+    // Google Maps update function
     function updateMaps() {
       let lat1 = document.getElementById("FirstLat").value;
       let lon1 = document.getElementById("FirstLong").value;
       let lat2 = document.getElementById("SecLat").value;
       let lon2 = document.getElementById("SecLong").value;
-
-      document.getElementById("mapFrame1").src = `https://www.google.com/maps?q=${lat1},${lon1}&hl=en&z=14&output=embed`;
-      document.getElementById("mapFrame2").src = `https://www.google.com/maps?q=${lat2},${lon2}&hl=en&z=14&output=embed`;
+      document.getElementById("mapFrame1").src = `https://www.google.com/maps?q=${lat1 || 0},${lon1 || 0}&hl=en&z=14&output=embed`;
+      document.getElementById("mapFrame2").src = `https://www.google.com/maps?q=${lat2 || 0},${lon2 || 0}&hl=en&z=14&output=embed`;
     }
 
     document.getElementById("FirstLat").addEventListener("input", updateMaps);
     document.getElementById("FirstLong").addEventListener("input", updateMaps);
     document.getElementById("SecLat").addEventListener("input", updateMaps);
     document.getElementById("SecLong").addEventListener("input", updateMaps);
+
+    // Leaflet map initialization and update
+    document.addEventListener("DOMContentLoaded", function() {
+      var leafletMap = L.map('leafletMap').setView([0, 0], 2);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 19,
+          attribution: '© OpenStreetMap contributors'
+      }).addTo(leafletMap);
+
+      // Create markers and polyline
+      var marker1 = L.marker([0, 0]).addTo(leafletMap);
+      var marker2 = L.marker([0, 0]).addTo(leafletMap);
+      var polyline = L.polyline([[0, 0], [0, 0]], {color: 'blue'}).addTo(leafletMap);
+
+      function updateLeafletMap() {
+        let lat1 = parseFloat(document.getElementById("FirstLat").value) || 0;
+        let lon1 = parseFloat(document.getElementById("FirstLong").value) || 0;
+        let lat2 = parseFloat(document.getElementById("SecLat").value) || 0;
+        let lon2 = parseFloat(document.getElementById("SecLong").value) || 0;
+
+        marker1.setLatLng([lat1, lon1]);
+        marker2.setLatLng([lat2, lon2]);
+        polyline.setLatLngs([[lat1, lon1], [lat2, lon2]]);
+        // Adjust view to fit both markers
+        let bounds = L.latLngBounds([[lat1, lon1], [lat2, lon2]]);
+        leafletMap.fitBounds(bounds, {padding: [20, 20]});
+      }
+
+      document.getElementById("FirstLat").addEventListener("input", updateLeafletMap);
+      document.getElementById("FirstLong").addEventListener("input", updateLeafletMap);
+      document.getElementById("SecLat").addEventListener("input", updateLeafletMap);
+      document.getElementById("SecLong").addEventListener("input", updateLeafletMap);
+    });
   </script>
 </body>
 </html>
